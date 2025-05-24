@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Pelanggan & Pendapatan Internet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --gray: #6b7280;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f7fa;
+            color: #334155;
+            line-height: 1.6;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(255,255,255,0.1)" width="50" height="50" x="0" y="0"/><rect fill="rgba(255,255,255,0.1)" width="50" height="50" x="50" y="50"/></svg>');
+            opacity: 0.3;
+        }
+        
+        h1 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 32px;
+            letter-spacing: -0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        header p {
+            margin: 10px 0 0;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            flex: 1;
+            min-width: 220px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #eee;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 16px;
+            color: var(--gray);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .card:nth-child(1) .card-value {
+            color: var(--primary);
+        }
+        
+        .card:nth-child(2) .card-value {
+            color: var(--secondary);
+        }
+        
+        .card:nth-child(3) .card-value {
+            color: var(--warning);
+        }
+        
+        .content-section {
+            padding: 0 25px 25px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            font-size: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 16px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        
+        th:first-child {
+            border-top-left-radius: 10px;
+        }
+        
+        th:last-child {
+            border-top-right-radius: 10px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(241, 245, 249, 0.7);
+        }
+        
+        tr:hover {
+            background-color: rgba(241, 245, 249, 1);
+        }
+        
+        /* Month row colors */
+        tr.month-mar {
+            border-left: 4px solid var(--primary);
+        }
+        
+        tr.month-apr {
+            border-left: 4px solid var(--secondary);
+        }
+        
+        /* Package styling */
+        td.basic {
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        td.basic::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            margin-right: 8px;
+        }
+        
+        td.standard {
+            color: var(--secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        td.standard::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            margin-right: 8px;
+        }
+        
+        td.premium {
+            color: var(--danger);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        td.premium::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--danger);
+            margin-right: 8px;
+        }
+        
+        /* Number and currency columns */
+        td.number {
+            font-weight: 600;
+            text-align: right;
+            color: var(--dark);
+        }
+        
+        td.currency {
+            font-weight: 700;
+            text-align: right;
+            color: var(--dark);
+        }
+        
+        /* Footer row */
+        .table-footer {
+            background-color: #f8fafc !important;
+            font-weight: bold;
+        }
+        
+        .table-footer td {
+            border-top: 2px solid #e2e8f0;
+            color: var(--dark);
+        }
+        
+        /* Monthly summary */
+        .summary {
+            margin: 30px 0;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+        }
+        
+        .summary-title {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .summary-title::before {
+            content: '📊';
+            margin-right: 10px;
+            font-size: 22px;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .summary-table th, .summary-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .summary-table th {
+            background-color: #f8fafc;
+            color: var(--dark);
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: normal;
+            font-size: 15px;
+        }
+        
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Month badges */
+        .month-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .month-badge.maret {
+            background-color: var(--primary);
+        }
+        
+        .month-badge.april {
+            background-color: var(--secondary);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            background-color: #fafafa;
+        }
+        
+        .print-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .print-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6);
+        }
+        
+        .print-icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+            
+            .print-button {
+                display: none;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .card {
+                min-width: 100%;
+            }
+            
+            th, td {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+            
+            .card-value {
+                font-size: 24px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+            
+            header p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Data Pelanggan & Pendapatan Internet</h1>
+            <p>Laporan Bulan Maret - April 2023</p>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-title">Total Pelanggan</div>
+                <div class="card-value">4,391</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Pendapatan</div>
+                <div class="card-value">Rp3.261.000.000</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Rata-rata per Pelanggan</div>
+                <div class="card-value">
+                    Rp742.655
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bulan</th>
+                        <th>Produk</th>
+                        <th>Paket</th>
+                        <th>Pelanggan</th>
+                        <th>Pendapatan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="month-mar">
+                        <td><span class="month-badge maret">Maret</span></td>
+                        <td>Internet</td>
+                        <td class="basic">Basic</td>
+                        <td class="number">1,024</td>
+                        <td class="currency">Rp512.000.000</td>
+                    </tr>
+                    <tr class="month-mar">
+                        <td><span class="month-badge maret">Maret</span></td>
+                        <td>Internet</td>
+                        <td class="standard">Standar</td>
+                        <td class="number">878</td>
+                        <td class="currency">Rp658.500.000</td>
+                    </tr>
+                    <tr class="month-mar">
+                        <td><span class="month-badge maret">Maret</span></td>
+                        <td>Internet</td>
+                        <td class="premium">Premium</td>
+                        <td class="number">351</td>
+                        <td class="currency">Rp676.500.000</td>
+                    </tr>
+                    <tr class="month-apr">
+                        <td><span class="month-badge april">April</span></td>
+                        <td>Internet</td>
+                        <td class="basic">Basic</td>
+                        <td class="number">758</td>
+                        <td class="currency">Rp379.000.000</td>
+                    </tr>
+                    <tr class="month-apr">
+                        <td><span class="month-badge april">April</span></td>
+                        <td>Internet</td>
+                        <td class="standard">Standar</td>
+                        <td class="number">690</td>
+                        <td class="currency">Rp517.500.000</td>
+                    </tr>
+                    <tr class="month-apr">
+                        <td><span class="month-badge april">April</span></td>
+                        <td>Internet</td>
+                        <td class="premium">Premium</td>
+                        <td class="number">690</td>
+                        <td class="currency">Rp517.500.000</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="table-footer">
+                        <td colspan="3">Total</td>
+                        <td class="number">4,391</td>
+                        <td class="currency">Rp3.261.000.000</td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <div class="summary">
+                <div class="summary-title">Ringkasan Bulanan</div>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Bulan</th>
+                            <th>Total Pelanggan</th>
+                            <th>Total Pendapatan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="month-badge maret">Maret</span></td>
+                            <td>2,253</td>
+                            <td>Rp1.847.000.000</td>
+                        </tr>
+                        <tr>
+                            <td><span class="month-badge april">April</span></td>
+                            <td>2,138</td>
+                            <td>Rp1.414.000.000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 PT Ilham MU Sejahtera. Laporan dibuat pada 24/05/2023</p>
+        </footer>
+    </div>
+    
+    <button class="print-button" onclick="window.print()" title="Cetak Laporan">
+        <svg class="print-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+    </button>
+    
+    <script>
+        // For demonstration purposes - makes cards animate in on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>
